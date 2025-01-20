@@ -1,6 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
+
   return (
     <div style={styles.container}>
       {/* Navbar */}
@@ -22,9 +25,9 @@ const Home = () => {
 
       {/* Contenido central */}
       <div style={styles.content}>
-        <div style={styles.card}>PAGOS</div>
-        <div style={styles.card}>MULTAS</div>
-        <div style={styles.card}>PORTONES</div>
+        <div style={styles.card} onClick={() => navigate("/pagos")}>PAGOS</div>
+        <div style={styles.card} onClick={() => navigate("/Multas")}>MULTAS</div>
+        <div style={styles.card} onClick={() => navigate("/Portones")}>PORTONES</div>
       </div>
     </div>
   );
