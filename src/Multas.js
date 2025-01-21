@@ -36,7 +36,7 @@ const Multas = () => {
 
     // Enviar los datos al backend
     try {
-      const response = await axios.post("https://tu-api-url/multas", {
+      const response = await axios.post("http://localhost:3000/api/multas", {
         fecha,
         monto,
         motivo,
