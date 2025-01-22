@@ -80,7 +80,9 @@ const Multas = () => {
           style={styles.textarea}
         />
 
-        <button type="submit" style={styles.button}>Registrar Multa</button>
+        <button type="submit" style={styles.button}>
+          Registrar Multa
+        </button>
       </form>
 
       {/* Tabla de multas registradas */}
@@ -110,7 +112,92 @@ const Multas = () => {
 };
 
 const styles = {
-  // Los estilos permanecen igual
+  container: {
+    fontFamily: "Arial, sans-serif",
+    backgroundColor: "#fffaf0",
+    padding: "20px",
+  },
+  title: {
+    fontSize: "24px",
+    fontWeight: "bold",
+    color: "#333",
+    textAlign: "center",
+    marginBottom: "20px",
+  },
+  form: {
+    marginBottom: "20px",
+    padding: "20px",
+    backgroundColor: "#f0f0f0",
+    borderRadius: "8px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  },
+  input: {
+    width: "100%",
+    padding: "10px",
+    margin: "8px 0",
+    border: "1px solid #ddd",
+    borderRadius: "4px",
+    fontSize: "16px",
+  },
+  textarea: {
+    width: "100%",
+    padding: "10px",
+    margin: "8px 0",
+    border: "1px solid #ddd",
+    borderRadius: "4px",
+    fontSize: "16px",
+    minHeight: "100px",
+  },
+  button: {
+    backgroundColor: "#ffa726",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    padding: "8px 12px",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "bold",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    transition: "background-color 0.2s ease-in-out",
+  },
+  tableTitle: {
+    fontSize: "20px",
+    fontWeight: "bold",
+    color: "#333",
+    textAlign: "center",
+    marginBottom: "20px",
+  },
+  tableContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+  },
+  row: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#ffffff",
+    padding: "10px",
+    borderRadius: "5px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  },
+  cell: {
+    flex: 1,
+    textAlign: "left",
+    fontSize: "16px",
+    color: "#333",
+    padding: "0 10px",
+  },
+  cellHeader: {
+    fontWeight: "bold",
+    flex: 1,
+    textAlign: "left",
+    fontSize: "16px",
+    color: "#333",
+    padding: "0 10px",
+    backgroundColor: "#f4f4f4",
+    borderBottom: "2px solid #ddd",
+  },
 };
 
 export default Multas;
