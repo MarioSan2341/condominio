@@ -1,11 +1,43 @@
-import React from "react";
-import { useNavigate } from "react-router-dom"; // Para la navegación
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios"; // Para manejar las solicitudes HTTP
 import fondo from "./fondouwu.jpg";
 import logo from "./logo01.png";
 import logo02 from "./logo02.png";
 
 const Login = () => {
-  const navigate = useNavigate(); // Hook para redirigir
+  const navigate = useNavigate();
+  const [usuario, setUsuario] = useState("");
+  const [contraseña, setContraseña] = useState("");
+  const [error, setError] = useState("");
+
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post("http://localhost:3000/api/login", {
+        usuario,
+        contraseña,
+      });
+  
+      if (response.data.message) {
+        alert(response.data.message); // Mensaje de éxito
+      
+        console.log("ID del usuario:", response.data.id);
+        console.log("ID del departamento:", response.data.id_departamento);
+      
+        localStorage.setItem("userId", response.data.id); // Guardar el ID del usuario
+        localStorage.setItem("userDepartmentId", response.data.id_departamento); // Guardar el ID del departamento
+      
+        if (response.data.rol === "admin") {
+          navigate("/Admin");
+        } else {
+          navigate("/home");
+        }
+      }
+    } catch (err) {
+      console.error("Error al iniciar sesión:", err.response?.data || err);
+      setError(err.response?.data.error || "Error al iniciar sesión.");
+    }
+  };
 
   return (
     <div style={styles.background}>
@@ -13,14 +45,16 @@ const Login = () => {
       <img src={logo02} alt="Logo Secundario" style={styles.logoRight} />
 
       {/* Contenedor del formulario */}
-      <div style={styles.container}> 
+      <div style={styles.container}>
         {/* Imagen del logo principal */}
         <img src={logo} alt="Logo" style={styles.logo} />
 
-        <h2 style={styles.title}>Número Telefónico</h2>
+        <h2 style={styles.title}>Número Usuario</h2>
         <input
           type="text"
-          placeholder="Ingresa tu número telefónico"
+          placeholder="Ingresa tu Usuario"
+          value={usuario}
+          onChange={(e) => setUsuario(e.target.value)}
           style={styles.input}
         />
 
@@ -28,19 +62,14 @@ const Login = () => {
         <input
           type="password"
           placeholder="Ingresa tu contraseña"
+          value={contraseña}
+          onChange={(e) => setContraseña(e.target.value)}
           style={styles.input}
         />
 
-        <p style={styles.recoveryText}>
-          ¿Desea recuperar contraseña?{" "}
-          <span style={styles.link}>Presione Aqui</span>
-        </p>
+        {error && <p style={styles.error}>{error}</p>}
 
-         {/* Botón para iniciar sesión */}
-         <button
-          style={styles.loginButton}
-          onClick={() => navigate("/home")} // Redirige a Home.js al hacer clic
-        >
+        <button style={styles.loginButton} onClick={handleLogin}>
           Iniciar Sesión
         </button>
 
@@ -53,7 +82,7 @@ const Login = () => {
         {/* Botón para ir al registro */}
         <p
           style={styles.registerText}
-          onClick={() => navigate("/registro")} // Redirige a /registro
+          onClick={() => navigate("/registro")}
         >
           Registrarse
         </p>

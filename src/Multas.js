@@ -1,49 +1,51 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+
+// Elimina el estado de la multa del formulario, ya no es necesario capturarlo.
 
 const Multas = () => {
   const [fecha, setFecha] = useState(new Date().toISOString().split("T")[0]);
   const [monto, setMonto] = useState("");
   const [motivo, setMotivo] = useState("");
-  const [estado] = useState("Pendiente");
+  const [idDepartamento, setIdDepartamento] = useState(""); // Cambié 'idUsuario' por 'idDepartamento'
   const [multasData, setMultasData] = useState([]);
-
-  // Cargar multas al montar el componente
-  useEffect(() => {
-    const fetchMultas = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/api/multas");
-        setMultasData(response.data); // Actualiza el estado con los datos de la base
-      } catch (error) {
-        console.error("Error al cargar las multas:", error);
-        alert("Error al cargar las multas");
-      }
-    };
-
-    fetchMultas();
-  }, []);
 
   // Función para manejar el envío de la multa al backend
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!idDepartamento || idDepartamento <= 0) {
+      alert("El ID del departamento es obligatorio y debe ser válido.");
+      return;
+    }
+
+    // Convierte el monto a número si es necesario
+    const montoNumerico = parseFloat(monto);
+
+    if (isNaN(montoNumerico)) {
+      alert("El monto debe ser un número válido.");
+      return;
+    }
+
     try {
       const response = await axios.post("http://localhost:3000/api/multas", {
         fecha,
-        monto,
+        monto: montoNumerico,  // Asegúrate de enviar un número
         motivo,
-        estado,
+        id_departamento: parseInt(idDepartamento), // Cambié 'id_usuario' por 'id_departamento'
       });
+
       alert("Multa creada exitosamente");
-      setMultasData([...multasData, response.data]); // Agregar la nueva multa al estado
+      setMultasData([...multasData, response.data]); // Añadir la nueva multa al estado
     } catch (error) {
       console.error("Error al crear la multa:", error);
-      alert("Hubo un error al crear la multa");
+      alert("Hubo un error al crear la multa. " + error.response?.data?.error || "Intenta de nuevo.");
     }
 
     // Limpiar el formulario
     setMonto("");
     setMotivo("");
+    setIdDepartamento(""); // Limpiar el campo idDepartamento
   };
 
   return (
@@ -79,37 +81,26 @@ const Multas = () => {
           placeholder="Motivo de la multa"
           style={styles.textarea}
         />
+        
+        <label htmlFor="idDepartamento">ID del Departamento:</label>
+        <input
+         type="number"
+         id="idDepartamento"
+         value={idDepartamento}
+         onChange={(e) => setIdDepartamento(e.target.value)}
+         placeholder="ID del Departamento"
+         style={styles.input}
+        />
 
         <button type="submit" style={styles.button}>
           Registrar Multa
         </button>
       </form>
-
-      {/* Tabla de multas registradas */}
-      <h2 style={styles.tableTitle}>Multas Registradas</h2>
-      <div style={styles.tableContainer}>
-        <div style={styles.row}>
-          <div style={styles.cellHeader}>ID Multa</div>
-          <div style={styles.cellHeader}>Fecha</div>
-          <div style={styles.cellHeader}>Monto</div>
-          <div style={styles.cellHeader}>Motivo</div>
-          <div style={styles.cellHeader}>Estado</div>
-        </div>
-
-        {multasData.map((multa) => (
-          <div key={multa.id_multa} style={styles.row}>
-            <div style={styles.cell}>{multa.id_multa}</div>
-            <div style={styles.cell}>{multa.fecha}</div>
-            <div style={styles.cell}>${multa.monto}</div>
-            <div style={styles.cell}>{multa.motivo}</div>
-            <div style={styles.cell}>{multa.estado}</div>
-            <button style={styles.button}>Imprimir multa</button>
-          </div>
-        ))}
-      </div>
+      
     </div>
   );
 };
+
 
 const styles = {
   container: {

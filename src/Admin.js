@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react"; // Importamos useCallback
 import { useNavigate } from "react-router-dom";
 
-const Home = () => {
+const Admin = () => {
   const navigate = useNavigate();
 
   const [showNotifications, setShowNotifications] = useState(false);
@@ -35,6 +35,26 @@ const Home = () => {
     }
   }, [hasFetchedMultas]); // Dependencia para evitar cambios innecesarios
 
+  const markAsRead = async (idMulta) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/multas/marcar-leido/${idMulta}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        setPendingMultas((prevMultas) => prevMultas.filter((multa) => multa.id_multa !== idMulta));
+        console.log(`Multa ${idMulta} marcada como leída.`);
+      } else {
+        console.error("Error al marcar la multa como leída");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchUserData = async () => {
       const userDepartmentId = localStorage.getItem("userDepartmentId");
@@ -52,7 +72,7 @@ const Home = () => {
       {/* Navbar */}
       <div style={styles.navbar}>
         <div style={styles.navLeft}>
-          <h1 style={styles.navTitle}>Tulipanes #31</h1>
+          <h1 style={styles.navTitle}>Tulipanes #30</h1>
         </div>
         <div style={styles.navRight}>
           <input
@@ -85,6 +105,9 @@ const Home = () => {
         <div style={styles.card} onClick={() => navigate("/Portones")}>
           <span style={styles.cardText}>PORTONES</span>
         </div>
+        <div style={styles.card} onClick={() => navigate("/Multas")}>
+          <span style={styles.cardText}>REGISTRAR MULTAS</span>
+        </div>
       </div>
 
       {/* Modal para mostrar multas y pagar */}
@@ -92,17 +115,21 @@ const Home = () => {
         <div style={styles.modal}>
           <h2>Notificaciones de Multas</h2>
           <ul style={styles.multaList}>
-            {pendingMultas.map((multa, index) => (
-              <li key={index} style={styles.multaItem}>
-                <strong>Multa ID:</strong> {multa.id_multa} <br />
-                <strong>Motivo:</strong> {multa.motivo} <br />
-                <strong>Monto:</strong> {multa.monto} <br />
-                <strong>Fecha:</strong> {new Date(multa.fecha).toLocaleDateString()} <br />
-              </li>
-            ))}
-          </ul>
+  {pendingMultas.map((multa) => (
+    <li key={multa.id_multa} style={styles.multaItem}>
+      <strong>Multa ID:</strong> {multa.id_multa} <br />
+      <strong>Motivo:</strong> {multa.motivo} <br />
+      <strong>Monto:</strong> {multa.monto} <br />
+      <strong>Fecha:</strong> {new Date(multa.fecha).toLocaleDateString()} <br />
+      <button style={styles.markAsReadButton} onClick={() => markAsRead(multa.id_multa)}>
+        Marcar como Leído
+      </button>
+    </li>
+  ))}
+</ul>
+
           <div style={styles.departmentId}>
-            <strong>ID del Departamento:</strong> {userDepartmentId}
+            {userDepartmentId}
           </div>
           <button style={styles.payButton} onClick={payMultas}>
             Pagar todas las multas
@@ -258,7 +285,7 @@ const styles = {
   },
 };
 
-export default Home;
+export default Admin;
 
 
 
