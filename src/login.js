@@ -13,20 +13,23 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post("http://localhost:3000/api/login", {
+      const response = await axios.post("https://apicondominio-o1n1.onrender.com/api/login", {
         usuario,
         contraseña,
       });
   
-      if (response.data.message) {
+      if (response.data.token) {
         alert(response.data.message); // Mensaje de éxito
-      
+  
+        // Guardar el token y datos del usuario en localStorage
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("userId", response.data.id);
+        localStorage.setItem("userDepartmentId", response.data.id_departamento);
+  
         console.log("ID del usuario:", response.data.id);
         console.log("ID del departamento:", response.data.id_departamento);
-      
-        localStorage.setItem("userId", response.data.id); // Guardar el ID del usuario
-        localStorage.setItem("userDepartmentId", response.data.id_departamento); // Guardar el ID del departamento
-      
+  
+        // Redirigir según el rol
         if (response.data.rol === "admin") {
           navigate("/Admin");
         } else {

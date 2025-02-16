@@ -1,0 +1,173 @@
+/* Multas.css */
+
+.container {
+    font-family: "Arial, sans-serif";
+    background-color: #fffaf0;
+    padding: 20px;
+  }
+  
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .form {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .input, .textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .textarea {
+    min-height: 100px;
+  }
+  
+  .button {
+    background-color: #ffa726;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .tableTitle {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .tableContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .cell {
+    flex: 1;
+    text-align: left;
+    font-size: 16px;
+    color: #333;
+    padding: 0 10px;
+  }
+  
+  .cellHeader {
+    font-weight: bold;
+    flex: 1;
+    text-align: left;
+    font-size: 16px;
+    color: #333;
+    padding: 0 10px;
+    background-color: #f4f4f4;
+    border-bottom: 2px solid #ddd;
+  }
+  
+  .loading {
+    font-size: 18px;
+    color: #ffa726;
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .mensaje {
+    font-size: 18px;
+    color: #4caf50; /* Verde para éxito */
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  /* Animación de desvanecimiento */
+  .fade-enter {
+    opacity: 0;
+  }
+  .fade-enter-active {
+    opacity: 1;
+    transition: opacity 300ms ease-in-out;
+  }
+  .fade-exit {
+    opacity: 1;
+  }
+  .fade-exit-active {
+    opacity: 0;
+    transition: opacity 300ms ease-in-out;
+  }
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top: 5px solid #ffa726; /* Color del spinner */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .button {
+    background-color: #ffa726;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out; /* Agregar transición para animación */
+  }
+  
+  /* Efecto de hover cuando el botón no está presionado */
+  .button:hover {
+    background-color: #ff8c00;
+  }
+  
+  /* Efecto cuando el botón está presionado */
+  .button:active {
+    transform: scale(0.95); /* Reducir ligeramente el tamaño del botón */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Aumentar el sombreado para el efecto de presionado */
+  }
+  

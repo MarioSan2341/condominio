@@ -1,16 +1,20 @@
 import React, { useState } from "react";
 import axios from "axios";
-
-// Elimina el estado de la multa del formulario, ya no es necesario capturarlo.
+import Loading from "./Loading";
+import Mensaje from "./Mensaje";
+import './Multas.css';
 
 const Multas = () => {
   const [fecha, setFecha] = useState(new Date().toISOString().split("T")[0]);
   const [monto, setMonto] = useState("");
   const [motivo, setMotivo] = useState("");
-  const [idDepartamento, setIdDepartamento] = useState(""); // Cambié 'idUsuario' por 'idDepartamento'
+  const [idDepartamento, setIdDepartamento] = useState(""); 
   const [multasData, setMultasData] = useState([]);
+  
+  const [loading, setLoading] = useState(false);
+  const [mensaje, setMensaje] = useState("");
+  const [tipoMensaje, setTipoMensaje] = useState(""); // "exito" o "error"
 
-  // Función para manejar el envío de la multa al backend
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -19,7 +23,6 @@ const Multas = () => {
       return;
     }
 
-    // Convierte el monto a número si es necesario
     const montoNumerico = parseFloat(monto);
 
     if (isNaN(montoNumerico)) {
@@ -27,40 +30,54 @@ const Multas = () => {
       return;
     }
 
+    setLoading(true);
+    setMensaje("");
+
     try {
       const response = await axios.post("http://localhost:3000/api/multas", {
         fecha,
-        monto: montoNumerico,  // Asegúrate de enviar un número
+        monto: montoNumerico,
         motivo,
-        id_departamento: parseInt(idDepartamento), // Cambié 'id_usuario' por 'id_departamento'
+        id_departamento: parseInt(idDepartamento),
       });
 
-      alert("Multa creada exitosamente");
-      setMultasData([...multasData, response.data]); // Añadir la nueva multa al estado
+      setMultasData([...multasData, response.data]);
+      setMensaje("Multa registrada correctamente!");
+      setTipoMensaje("exito"); // Muestra el mensaje con la palomita verde
+
+      // Hacer desaparecer el mensaje de éxito después de 3 segundos
+      setTimeout(() => {
+        setMensaje("");
+      }, 3000); // 3000ms = 3 segundos
     } catch (error) {
       console.error("Error al crear la multa:", error);
-      alert("Hubo un error al crear la multa. " + error.response?.data?.error || "Intenta de nuevo.");
+      setMensaje("Hubo un error al registrar la multa.");
+      setTipoMensaje("error");
+      setTimeout(() => {
+        setMensaje("");
+      }, 3000); // 3000ms = 3 segundos
+      
+    } finally {
+      setLoading(false);
     }
 
-    // Limpiar el formulario
     setMonto("");
     setMotivo("");
-    setIdDepartamento(""); // Limpiar el campo idDepartamento
+    setIdDepartamento("");
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>REGISTROS DE MULTAS</h1>
+    <div className="container">
+      <h1 className="title">REGISTROS DE MULTAS</h1>
 
-      {/* Formulario para registrar una nueva multa */}
-      <form onSubmit={handleSubmit} style={styles.form}>
+      <form onSubmit={handleSubmit} className="form">
         <label htmlFor="fecha">Fecha:</label>
         <input
           type="date"
           id="fecha"
           value={fecha}
           onChange={(e) => setFecha(e.target.value)}
-          style={styles.input}
+          className="input"
         />
 
         <label htmlFor="monto">Monto (en pesos):</label>
@@ -70,7 +87,7 @@ const Multas = () => {
           value={monto}
           onChange={(e) => setMonto(e.target.value)}
           placeholder="$"
-          style={styles.input}
+          className="input"
         />
 
         <label htmlFor="motivo">Motivo de la Multa:</label>
@@ -79,116 +96,29 @@ const Multas = () => {
           value={motivo}
           onChange={(e) => setMotivo(e.target.value)}
           placeholder="Motivo de la multa"
-          style={styles.textarea}
+          className="textarea"
         />
         
         <label htmlFor="idDepartamento">ID del Departamento:</label>
         <input
-         type="number"
-         id="idDepartamento"
-         value={idDepartamento}
-         onChange={(e) => setIdDepartamento(e.target.value)}
-         placeholder="ID del Departamento"
-         style={styles.input}
+          type="number"
+          id="idDepartamento"
+          value={idDepartamento}
+          onChange={(e) => setIdDepartamento(e.target.value)}
+          placeholder="ID del Departamento"
+          className="input"
         />
 
-        <button type="submit" style={styles.button}>
+        <button type="submit" className="button">
           Registrar Multa
         </button>
       </form>
+
+      <Loading loading={loading} />
       
+      {!loading && <Mensaje mensaje={mensaje} tipo={tipoMensaje} />}
     </div>
   );
-};
-
-
-const styles = {
-  container: {
-    fontFamily: "Arial, sans-serif",
-    backgroundColor: "#fffaf0",
-    padding: "20px",
-  },
-  title: {
-    fontSize: "24px",
-    fontWeight: "bold",
-    color: "#333",
-    textAlign: "center",
-    marginBottom: "20px",
-  },
-  form: {
-    marginBottom: "20px",
-    padding: "20px",
-    backgroundColor: "#f0f0f0",
-    borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-  },
-  input: {
-    width: "100%",
-    padding: "10px",
-    margin: "8px 0",
-    border: "1px solid #ddd",
-    borderRadius: "4px",
-    fontSize: "16px",
-  },
-  textarea: {
-    width: "100%",
-    padding: "10px",
-    margin: "8px 0",
-    border: "1px solid #ddd",
-    borderRadius: "4px",
-    fontSize: "16px",
-    minHeight: "100px",
-  },
-  button: {
-    backgroundColor: "#ffa726",
-    color: "#fff",
-    border: "none",
-    borderRadius: "5px",
-    padding: "8px 12px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "bold",
-    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-    transition: "background-color 0.2s ease-in-out",
-  },
-  tableTitle: {
-    fontSize: "20px",
-    fontWeight: "bold",
-    color: "#333",
-    textAlign: "center",
-    marginBottom: "20px",
-  },
-  tableContainer: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-  },
-  row: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#ffffff",
-    padding: "10px",
-    borderRadius: "5px",
-    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-  },
-  cell: {
-    flex: 1,
-    textAlign: "left",
-    fontSize: "16px",
-    color: "#333",
-    padding: "0 10px",
-  },
-  cellHeader: {
-    fontWeight: "bold",
-    flex: 1,
-    textAlign: "left",
-    fontSize: "16px",
-    color: "#333",
-    padding: "0 10px",
-    backgroundColor: "#f4f4f4",
-    borderBottom: "2px solid #ddd",
-  },
 };
 
 export default Multas;
