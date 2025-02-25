@@ -9,6 +9,37 @@ const Admin = () => {
   const [userDepartmentId, setUserDepartmentId] = useState(null);
   const [hasFetchedMultas, setHasFetchedMultas] = useState(false);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+  
+        const response = await fetch("http://localhost:3000/api/usuarios", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (response.status === 401) {
+          // El token ha expirado o es inválido
+          console.log("Token expirado o inválido. Redirigiendo al login...");
+          localStorage.removeItem("token"); // Elimina el token
+          navigate("/"); // Redirige al login
+        } else {
+          const data = await response.json();
+          console.log("Datos obtenidos:", data);
+        }
+      } catch (error) {
+        console.error("Error al hacer la solicitud:", error);
+        localStorage.removeItem("token");
+        navigate("/");
+      }
+    };
+  
+    fetchData();
+  }, [navigate]);
+
   // useCallback para memoizar la función y evitar que cambie en cada render
   const fetchPendingMultas = useCallback(async (departmentId) => {
     if (!departmentId) {
@@ -22,9 +53,20 @@ const Admin = () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:3000/api/multas/pendientes/${departmentId}`);
-      const data = await response.json();
+      const response = await fetch(`http://localhost:3000/api/multas/pendientes/${departmentId}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`, // Incluyendo el token aquí
+        },
+      });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error en la respuesta de la API:", errorData);
+        return;
+      }
+
+      const data = await response.json();
       if (data.multas) {
         console.log("Multas obtenidas del backend:", data.multas);
         setPendingMultas(data.multas);
@@ -33,7 +75,16 @@ const Admin = () => {
     } catch (error) {
       console.error("Error al obtener las multas:", error);
     }
-  }, [hasFetchedMultas]); // Dependencia para evitar cambios innecesarios
+  }, [hasFetchedMultas]);
+
+  const logout = () => {
+    // Eliminar el token del almacenamiento local
+    localStorage.removeItem("token");
+    localStorage.removeItem("userDepartmentId"); // Elimina cualquier otro dato relevante
+  
+    // Redirigir al usuario al login
+    navigate("/"); // Suponiendo que la ruta "/" es la página de login
+  };
 
   const markAsRead = async (idMulta) => {
     try {
@@ -70,6 +121,17 @@ const Admin = () => {
   return (
     <div style={styles.container}>
       {/* Navbar */}
+<div style={styles.profileIcon} onClick={() => setShowNotifications(!showNotifications)}>
+  <span style={styles.profileText}>👤</span>
+</div>
+
+{showNotifications && (
+  <div style={styles.logoutContainer}>
+    <button style={styles.logoutButton} onClick={logout}>
+      Cerrar sesión
+    </button>
+  </div>
+)}
       <div style={styles.navbar}>
         <div style={styles.navLeft}>
           <h1 style={styles.navTitle}>Tulipanes #30</h1>
@@ -115,18 +177,18 @@ const Admin = () => {
         <div style={styles.modal}>
           <h2>Notificaciones de Multas</h2>
           <ul style={styles.multaList}>
-  {pendingMultas.map((multa) => (
-    <li key={multa.id_multa} style={styles.multaItem}>
-      <strong>Multa ID:</strong> {multa.id_multa} <br />
-      <strong>Motivo:</strong> {multa.motivo} <br />
-      <strong>Monto:</strong> {multa.monto} <br />
-      <strong>Fecha:</strong> {new Date(multa.fecha).toLocaleDateString()} <br />
-      <button style={styles.markAsReadButton} onClick={() => markAsRead(multa.id_multa)}>
-        Marcar como Leído
-      </button>
-    </li>
-  ))}
-</ul>
+            {pendingMultas.map((multa) => (
+              <li key={multa.id_multa} style={styles.multaItem}>
+                <strong>Multa ID:</strong> {multa.id_multa} <br />
+                <strong>Motivo:</strong> {multa.motivo} <br />
+                <strong>Monto:</strong> {multa.monto} <br />
+                <strong>Fecha:</strong> {new Date(multa.fecha).toLocaleDateString()} <br />
+                <button style={styles.markAsReadButton} onClick={() => markAsRead(multa.id_multa)}>
+                  Marcar como Leído
+                </button>
+              </li>
+            ))}
+          </ul>
 
           <div style={styles.departmentId}>
             {userDepartmentId}
@@ -283,10 +345,28 @@ const styles = {
     fontWeight: "bold",
     cursor: "pointer",
   },
+  logoutContainer: {
+    position: "absolute",
+    top: "60px", // Ajusta según el diseño de tu navbar
+    right: "20px",
+    backgroundColor: "white",
+    borderRadius: "5px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    padding: "10px",
+    zIndex: 5,
+  },
+
+  logoutButton: {
+    backgroundColor: "#ff5252", // Rojo para un botón de cerrar sesión
+    color: "white",
+    padding: "10px 20px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    width: "100%",
+  },
+
 };
 
 export default Admin;
-
-
-
-
